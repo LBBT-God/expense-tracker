@@ -114,25 +114,6 @@ flutter test
 
 ---
 
-## 📸 Screenshots
-
-| Ledger | Add Record | Charts | Profile |
-|--------|-----------|--------|---------|
-| _(screenshot)_ | _(screenshot)_ | _(screenshot)_ | _(screenshot)_ |
-
----
-
-## 👥 Team
-
-| Member | Role |
-|--------|------|
-| Member 1 | Project lead · State management |
-| Member 2 | UI/UX · Ledger & Detail screens |
-| Member 3 | Charts & Discover screens |
-| Member 4 | Persistence & Testing |
-| Member 5 | Documentation & Presentation |
-
----
 
 ## 📄 License
 
