@@ -1,8 +1,9 @@
 # 💰 My Wallet — Personal Expense Tracker
 
-A clean, modern **personal expense tracker** built with **Flutter**. Record your daily
-income and expenses, browse them by month, visualise spending trends with charts, set a
-monthly budget, and keep everything stored safely on your own device.
+A clean, modern **personal expense tracker** built with **Flutter** and **Firebase**.
+Record your daily income and expenses, browse them by month, visualise spending trends
+with charts, set a monthly budget, and have everything stored in the cloud and synced in
+realtime with **Cloud Firestore**.
 
 This project was developed for a Mobile Application Development course assignment and
 demonstrates a complete **CRUD** application with local state management and a responsive
@@ -20,7 +21,7 @@ Material 3 user interface.
 | **Delete** | Remove a record with a confirmation dialog, or clear all data from the Profile page. |
 | **Charts** | A custom-painted line chart (Week / Month / Year) plus a category breakdown with percentages. |
 | **Budget** | Set a monthly budget and track remaining balance with a circular progress indicator. |
-| **Persistence** | All data is saved locally with `shared_preferences` — no internet required. |
+| **Persistence** | All data is stored in **Cloud Firestore** and synced across devices in realtime. |
 
 ---
 
@@ -33,18 +34,19 @@ UI (Screens / Widgets)
         │  context.watch / context.read
         ▼
 State  (TransactionProvider — ChangeNotifier)
-        │  toJson / fromJson
+        │  toMap / fromMap
         ▼
 Model  (Transaction, Category, TransactionType)
         │
         ▼
-Storage (SharedPreferences — local key/value store)
+Storage (Cloud Firestore — realtime NoSQL database)
 ```
 
 * **State management:** [`provider`](https://pub.dev/packages/provider) with a single
   `ChangeNotifier` (`TransactionProvider`) as the source of truth.
-* **Persistence:** every mutation (`add` / `update` / `delete`) writes the full list back
-  to `SharedPreferences` as a list of JSON strings.
+* **Persistence:** transactions live in the `transactions` Firestore collection (one
+  document per record); a realtime snapshot listener keeps the UI in sync, and the monthly
+  budget is stored in `settings/app`.
 * **UI:** Material 3, an amber (`#FFC107`) brand colour, and a custom bottom navigation bar
   with a central "Record" button.
 
@@ -74,28 +76,41 @@ lib/
 ## 🛠️ Tech Stack
 
 * **Flutter** (Dart SDK ^3.11) · **Material 3**
+* **firebase_core** + **cloud_firestore** — realtime cloud database (CRUD + persistence)
 * **provider** — state management
-* **shared_preferences** — local persistence
 * **intl** — date & number formatting
 * **uuid** — unique record IDs
+* **fake_cloud_firestore** *(dev)* — in-memory Firestore for tests
 
 ---
 
 ## 🚀 Getting Started
 
+This app needs a Firebase project (free **Spark** plan is enough).
+
 ```bash
 # 1. Get dependencies
 flutter pub get
 
-# 2. Run on a connected device / emulator / Chrome
-flutter run
+# 2. One-time Firebase setup (creates lib/firebase_options.dart)
+dart pub global activate flutterfire_cli
+flutterfire configure        # sign in, pick/create a Firebase project
 
-# 3. Run the tests
+# 3. In the Firebase Console: Build → Firestore Database → Create database
+#    (start in test mode for development)
+
+# 4. Run on an Android emulator / device or Chrome (web)
+flutter run -d chrome        # or: flutter run
+
+# 5. Run the tests (no Firebase needed — uses an in-memory fake)
 flutter test
 ```
 
 > Requires the Flutter SDK installed and on your `PATH`. See the
 > [official install guide](https://docs.flutter.dev/get-started/install).
+>
+> ⚠️ `cloud_firestore` does **not** support the Windows desktop target — run the app on
+> an **Android emulator/device** or in **Chrome (web)**.
 
 ---
 
@@ -105,8 +120,9 @@ Automated tests live in the `test/` folder:
 
 * `transaction_model_test.dart` — model serialization (`toMap`/`fromMap`,
   `toJson`/`fromJson`) and `copyWith`.
-* `transaction_provider_test.dart` — CRUD operations, income/expense totals, and balance.
-* `widget_test.dart` — a smoke test that builds the app and verifies the Ledger renders.
+* `transaction_provider_test.dart` — CRUD operations, income/expense totals, and balance,
+  run against an in-memory **fake_cloud_firestore** (no real Firebase connection needed).
+* `widget_test.dart` — a smoke test that verifies the main navigation renders.
 
 ```bash
 flutter test

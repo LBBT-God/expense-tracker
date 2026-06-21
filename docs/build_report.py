@@ -233,8 +233,8 @@ def hrule_after_heading():
 # COVER PAGE
 # ============================================================
 add_para("", space_before=40)
-add_para("MOBILE APPLICATION DEVELOPMENT", size=12, bold=True, color=GREY,
-         align=WD_ALIGN_PARAGRAPH.CENTER, space_after=4)
+add_para("DES3113 — MOBILE APPLICATION DESIGN & DEVELOPMENT", size=12, bold=True,
+         color=GREY, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=4)
 add_para("Project Report", size=12, italic=True, color=GREY,
          align=WD_ALIGN_PARAGRAPH.CENTER, space_after=40)
 
@@ -246,7 +246,7 @@ r.font.color.rgb = AMBER
 
 add_para("Personal Expense Tracker", size=20, bold=True, color=DARK,
          align=WD_ALIGN_PARAGRAPH.CENTER, space_after=6)
-add_para("A Cross-Platform CRUD Mobile Application Built with Flutter",
+add_para("A Cross-Platform CRUD Mobile Application Built with Flutter & Firebase",
          size=12, italic=True, color=GREY, align=WD_ALIGN_PARAGRAPH.CENTER,
          space_after=30)
 
@@ -261,19 +261,20 @@ add_para("Submitted by Group [Group Name / Number]", size=12, bold=True,
 add_table(
     ["No.", "Member Name", "Student ID", "Primary Role"],
     [
-        ["1", "Member 1", "[Student ID]", "Project Lead / State Management"],
-        ["2", "Member 2", "[Student ID]", "UI/UX — Ledger & Detail"],
-        ["3", "Member 3", "[Student ID]", "Charts & Discover"],
-        ["4", "Member 4", "[Student ID]", "Persistence & Testing"],
-        ["5", "Member 5", "[Student ID]", "Documentation & Presentation"],
+        ["1", "Sazit Ul Islam", "[Student ID]", "Project Lead / State Management"],
+        ["2", "Nur Aisyatul Najwa binti Mohamad Nasir", "[Student ID]",
+         "UI/UX — Ledger & Detail"],
+        ["3", "Nurfatin Aqilah binti Zolkifli", "[Student ID]", "Add/Edit & Charts"],
+        ["4", "Shi Kaiyan", "[Student ID]", "Discover, Profile & Testing"],
+        ["5", "Mst Samiya Haque Kotha", "[Student ID]", "Docs & Presentation"],
     ],
-    widths=[Cm(1.2), Cm(5.0), Cm(3.3), Cm(6.5)],
-    font_size=10,
+    widths=[Cm(1.0), Cm(6.6), Cm(2.8), Cm(5.6)],
+    font_size=9.5,
 )
 add_para("", space_after=10)
-add_para("Course: Mobile Application Development        Semester: [Semester]",
+add_para("Course: DES3113 — Reka Bentuk dan Pembangunan Aplikasi Mobil",
          size=11, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=2)
-add_para("Lecturer: [Lecturer Name]        Date: June 2026",
+add_para("Lecturer: Dr. Ahmad Wiraputra bin Selamat        Date: June 2026",
          size=11, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=2)
 
 doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
@@ -300,16 +301,15 @@ add_para(
     "working adults. Small, frequent purchases — a coffee here, a bus fare there — "
     "are easy to forget and quickly add up, making it difficult to understand where "
     "money actually goes each month. While many commercial finance apps exist, they "
-    "are often cluttered with features, require account registration, or push the "
-    "user's data to the cloud."
+    "are often cluttered with features, ad-heavy, or hide the basics behind a paywall."
 )
 add_para(
     "My Wallet is a lightweight personal expense tracker that solves this problem. "
     "It lets a user record income and expenses in seconds, review them grouped by day "
     "and month, visualise spending trends, and stay within a monthly budget — all "
-    "while keeping every record stored privately on the device. The application was "
-    "developed with Flutter, Google's cross-platform UI toolkit, allowing a single "
-    "codebase to target Android, iOS, web and desktop."
+    "while storing every record in the cloud with Firebase so the data is safe and "
+    "synced in realtime. The application was developed with Flutter, Google's "
+    "cross-platform UI toolkit, allowing a single codebase to target Android, iOS and web."
 )
 
 doc.add_heading("1.2 Problem Statement", level=2)
@@ -317,7 +317,7 @@ add_bullets([
     "Users lack a fast, friction-free way to log everyday transactions.",
     "Existing apps are often too complex, ad-heavy, or require online accounts.",
     "Users want to see spending patterns and control a monthly budget at a glance.",
-    "Privacy-conscious users prefer their financial data to stay on their own device.",
+    "Users want their data backed up and synced across devices, not trapped on one phone.",
 ])
 
 doc.add_heading("1.3 Objectives", level=2)
@@ -327,7 +327,7 @@ add_numbers([
     "To apply local state management using the Provider pattern.",
     "To build a clean, responsive, and intuitive user interface using Flutter's "
     "Material 3 widgets.",
-    "To persist data locally so that records survive app restarts.",
+    "To persist data in a cloud database so records survive restarts and sync across devices.",
     "To practise team collaboration and version control using Git and GitHub.",
 ])
 
@@ -336,15 +336,15 @@ add_para(
     "The project covers a fully functional expense-tracking app with transaction "
     "management, monthly browsing, charts, budget tracking, and a profile/statistics "
     "page. The following are intentionally out of scope for this assignment: "
-    "multi-user accounts, cloud synchronisation, bank integration, and online "
-    "authentication. These are discussed as future enhancements in Section 10."
+    "multi-user accounts, bank integration, and user login/authentication. These are "
+    "discussed as future enhancements in Section 10."
 )
 
 doc.add_heading("1.5 Target Users", level=2)
 add_bullets([
     ("Students — ", "track allowance and daily spending on a tight budget."),
     ("Young working adults — ", "monitor monthly income, expenses and savings."),
-    ("Privacy-minded users — ", "anyone who wants offline, on-device finance tracking."),
+    ("Anyone — ", "who wants a simple, reliable tracker with their data safely in the cloud."),
 ])
 
 doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
@@ -389,7 +389,7 @@ add_bullets([
     ("Statistics — ", "totals for income, expense and net balance, plus the number "
      "of records and active days."),
     ("Month navigation — ", "step between months or jump to any month via a picker."),
-    ("Local persistence — ", "all data is stored on-device with shared_preferences."),
+    ("Cloud persistence — ", "all data is stored in Cloud Firestore and synced in realtime."),
 ])
 
 doc.add_heading("2.4 Technology Stack", level=2)
@@ -399,11 +399,12 @@ add_table(
         ["Language", "Dart (SDK ^3.11)", "Application programming language"],
         ["Framework", "Flutter (Material 3)", "Cross-platform UI toolkit"],
         ["State", "provider ^6.1", "ChangeNotifier-based state management"],
-        ["Storage", "shared_preferences ^2.3", "Local key/value persistence"],
-        ["Utilities", "intl ^0.20", "Date and number formatting"],
-        ["Utilities", "uuid ^4.5", "Unique transaction IDs"],
+        ["Database", "cloud_firestore ^6.6", "Realtime cloud NoSQL database (CRUD)"],
+        ["Backend", "firebase_core ^4.11", "Firebase initialisation"],
+        ["Utilities", "intl ^0.20 · uuid ^4.5", "Date/number formatting; unique IDs"],
         ["Version control", "Git + GitHub", "Source control and collaboration"],
-        ["Testing", "flutter_test", "Unit and widget testing"],
+        ["Testing", "flutter_test · fake_cloud_firestore",
+         "Unit/widget tests with an in-memory Firestore"],
     ],
     widths=[Cm(3.2), Cm(5.0), Cm(7.8)],
 )
@@ -434,14 +435,14 @@ add_code(
     "  |   State Layer  (TransactionProvider)            |\n"
     "  |   add() update() delete() totals budget         |\n"
     "  +------------------------+------------------------+\n"
-    "            toJson()        |  fromJson()\n"
+    "            toMap()         |  fromMap()\n"
     "                            v\n"
     "  +-------------------------------------------------+\n"
     "  |   Model Layer (Transaction, Category, Type)     |\n"
     "  +------------------------+------------------------+\n"
     "                            v\n"
     "  +-------------------------------------------------+\n"
-    "  |   Storage Layer  (SharedPreferences)            |\n"
+    "  |   Storage Layer  (Cloud Firestore)              |\n"
     "  +-------------------------------------------------+",
     "Figure 2: Layered architecture of My Wallet.",
 )
@@ -449,7 +450,8 @@ add_code(
 doc.add_heading("3.2 Project Folder Structure", level=2)
 add_code(
     "lib/\n"
-    "  main.dart                     # App entry, theme, Provider injection\n"
+    "  main.dart                     # App entry, Firebase init, Provider injection\n"
+    "  firebase_options.dart         # Firebase project config (web)\n"
     "  models/\n"
     "    transaction.dart            # Transaction model + enums\n"
     "  providers/\n"
@@ -477,7 +479,7 @@ add_para(
     "id, title, amount, category, date, type and note. Two enums — TransactionType "
     "(income / expense) and Category (food, transport, shopping, etc.) — keep the "
     "data type-safe. The model includes toMap/fromMap and toJson/fromJson methods so "
-    "it can be serialised to and from the local store."
+    "it can be serialised to and from Cloud Firestore."
 )
 add_code(
     "class Transaction {\n"
@@ -526,21 +528,24 @@ add_code(
 
 doc.add_heading("3.5 Data Persistence", level=2)
 add_para(
-    "Persistence is handled by shared_preferences. The full list of transactions is "
-    "stored as a list of JSON strings under a single key. On startup the provider "
-    "loads and decodes this list; after every add, update or delete it re-encodes and "
-    "saves. This approach is simple, dependency-light and perfectly adequate for the "
-    "data volumes of a personal tracker."
+    "Persistence is handled by Cloud Firestore. Each transaction is stored as a "
+    "document in the transactions collection (keyed by its id), and the monthly "
+    "budget lives in settings/app. A realtime snapshot listener streams changes back "
+    "to the app, so the in-memory list — and therefore the UI — updates the moment "
+    "data changes, on this device or any other."
 )
 add_code(
-    "Future<void> _save() async {\n"
-    "  final prefs = await SharedPreferences.getInstance();\n"
-    "  await prefs.setStringList(\n"
-    "    'transactions',\n"
-    "    _transactions.map((t) => t.toJson()).toList(),\n"
-    "  );\n"
-    "}",
-    "Listing 3: Saving transactions to local storage.",
+    "// Realtime read: listen to the collection\n"
+    "_txCol.snapshots().listen((snapshot) {\n"
+    "  _transactions = snapshot.docs\n"
+    "      .map((d) => Transaction.fromMap(d.data()))\n"
+    "      .toList();\n"
+    "  notifyListeners();\n"
+    "});\n"
+    "\n"
+    "// Create / Update: write one document\n"
+    "await _txCol.doc(t.id).set(t.toMap());",
+    "Listing 3: Reading and writing with Cloud Firestore.",
 )
 
 doc.add_heading("3.6 Navigation Structure", level=2)
@@ -654,8 +659,9 @@ doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 doc.add_heading("5. CRUD Implementation", level=1)
 add_para(
     "All four CRUD operations are implemented inside TransactionProvider and are "
-    "triggered from the UI. Each operation mutates the in-memory list, persists the "
-    "change, and calls notifyListeners() so the UI refreshes automatically."
+    "triggered from the UI. Create, update and delete write directly to Cloud "
+    "Firestore; a realtime snapshot listener then receives the change, refreshes the "
+    "in-memory list, and calls notifyListeners() so the UI updates automatically."
 )
 
 doc.add_heading("5.1 Create", level=2)
@@ -664,11 +670,9 @@ add_para(
     "UUID and passed to provider.add().")
 add_code(
     "Future<void> add(Transaction t) async {\n"
-    "  _transactions.add(t);\n"
-    "  await _save();\n"
-    "  notifyListeners();\n"
+    "  await _txCol.doc(t.id).set(t.toMap());\n"
     "}",
-    "Listing 4: Create operation.",
+    "Listing 4: Create operation (writes a Firestore document).",
 )
 
 doc.add_heading("5.2 Read", level=2)
@@ -691,14 +695,9 @@ add_para(
     "and replaces it.")
 add_code(
     "Future<void> update(Transaction t) async {\n"
-    "  final i = _transactions.indexWhere((x) => x.id == t.id);\n"
-    "  if (i != -1) {\n"
-    "    _transactions[i] = t;\n"
-    "    await _save();\n"
-    "    notifyListeners();\n"
-    "  }\n"
+    "  await _txCol.doc(t.id).set(t.toMap());\n"
     "}",
-    "Listing 6: Update operation.",
+    "Listing 6: Update operation (overwrites the document).",
 )
 
 doc.add_heading("5.4 Delete", level=2)
@@ -707,11 +706,9 @@ add_para(
     "removes the record by id.")
 add_code(
     "Future<void> delete(String id) async {\n"
-    "  _transactions.removeWhere((t) => t.id == id);\n"
-    "  await _save();\n"
-    "  notifyListeners();\n"
+    "  await _txCol.doc(id).delete();\n"
     "}",
-    "Listing 7: Delete operation.",
+    "Listing 7: Delete operation (removes the document).",
 )
 
 doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
@@ -734,12 +731,13 @@ add_para("Three test files were written under the test/ folder:")
 add_bullets([
     ("transaction_model_test.dart — ", "serialisation round-trips (toMap/fromMap, "
      "toJson/fromJson) and copyWith behaviour."),
-    ("transaction_provider_test.dart — ", "add, update, delete, clearAll, setBudget, "
-     "and the income/expense/balance getters."),
-    ("widget_test.dart — ", "a smoke test that builds the app and verifies the bottom "
-     "navigation renders."),
+    ("transaction_provider_test.dart — ", "add, update, delete, clearAll, setBudget "
+     "and the income/expense/balance getters, run against an in-memory "
+     "fake_cloud_firestore (no real Firebase connection needed)."),
+    ("widget_test.dart — ", "a smoke test that verifies the bottom navigation "
+     "renders."),
 ])
-add_para("All 11 automated tests pass, as summarised below.", space_before=4)
+add_para("All 12 automated tests pass, as summarised below.", space_before=4)
 add_table(
     ["#", "Test Case", "Type", "Result"],
     [
@@ -749,11 +747,12 @@ add_table(
         ["4", "Category exposes label and icon", "Unit", "Pass"],
         ["5", "Provider starts empty", "Unit", "Pass"],
         ["6", "add() updates list and totals", "Unit", "Pass"],
-        ["7", "update() replaces matching record", "Unit", "Pass"],
-        ["8", "delete() removes matching record", "Unit", "Pass"],
-        ["9", "clearAll() empties the ledger", "Unit", "Pass"],
-        ["10", "setBudget() stores the budget", "Unit", "Pass"],
-        ["11", "App builds and shows navigation", "Widget", "Pass"],
+        ["7", "add() persists to Firestore collection", "Unit", "Pass"],
+        ["8", "update() replaces matching record", "Unit", "Pass"],
+        ["9", "delete() removes matching record", "Unit", "Pass"],
+        ["10", "clearAll() empties the ledger", "Unit", "Pass"],
+        ["11", "setBudget() stores the budget", "Unit", "Pass"],
+        ["12", "App builds and shows navigation", "Widget", "Pass"],
     ],
     widths=[Cm(1.0), Cm(8.5), Cm(3.0), Cm(3.5)],
     col_align=[WD_ALIGN_PARAGRAPH.CENTER, None,
@@ -761,7 +760,7 @@ add_table(
 )
 add_code(
     "$ flutter test\n"
-    "00:00 +11: All tests passed!",
+    "00:01 +12: All tests passed!",
     "Listing 8: Test run output.",
 )
 
@@ -781,9 +780,11 @@ add_table(
          "Pass"],
         ["M6", "Set a monthly budget", "Budget card shows progress and remaining",
          "Pass"],
-        ["M7", "Restart the app", "All records persist (loaded from storage)",
+        ["M7", "Restart the app", "All records persist (reloaded from Firestore)",
          "Pass"],
         ["M8", "Clear all records", "Ledger is emptied after confirmation", "Pass"],
+        ["M9", "Check the Firebase console", "Records appear in the transactions "
+         "collection in realtime", "Pass"],
     ],
     widths=[Cm(1.0), Cm(4.8), Cm(7.7), Cm(2.5)],
     font_size=9.5,
@@ -829,22 +830,23 @@ add_para(
 add_table(
     ["Member", "Primary Responsibilities", "Contribution"],
     [
-        ["Member 1", "Project coordination; data model and TransactionProvider "
-         "(state management, CRUD, persistence).", "20%"],
-        ["Member 2", "UI/UX design; Ledger and Detail screens; reusable "
-         "TransactionTile widget.", "20%"],
-        ["Member 3", "Add/Edit Record screen (keypad, category grid) and the Charts "
-         "screen (custom line chart).", "20%"],
-        ["Member 4", "Discover (budget) and Profile screens; persistence wiring; "
-         "automated tests.", "20%"],
-        ["Member 5", "Documentation, README, project report and presentation "
-         "slides; manual testing.", "20%"],
+        ["Sazit Ul Islam", "Project coordination; data model and TransactionProvider "
+         "(state management, CRUD, Firestore persistence).", "20%"],
+        ["Nur Aisyatul Najwa\nbinti Mohamad Nasir", "UI/UX design; Ledger and Detail "
+         "screens; reusable TransactionTile widget.", "20%"],
+        ["Nurfatin Aqilah\nbinti Zolkifli", "Add/Edit Record screen (keypad, category "
+         "grid) and the Charts screen (custom line chart).", "20%"],
+        ["Shi Kaiyan", "Discover (budget) and Profile screens; Firebase/Firestore "
+         "wiring; automated tests.", "20%"],
+        ["Mst Samiya Haque\nKotha", "Documentation, README, project report and "
+         "presentation slides; manual testing.", "20%"],
     ],
-    widths=[Cm(2.6), Cm(10.4), Cm(3.0)],
+    widths=[Cm(4.0), Cm(9.0), Cm(3.0)],
     col_align=[None, None, WD_ALIGN_PARAGRAPH.CENTER],
 )
-add_para("Note: Replace the placeholder names and adjust the contribution split to "
-         "reflect your group's actual work.", size=9, italic=True, color=GREY)
+add_para("Lecturer: Dr. Ahmad Wiraputra bin Selamat. Every member contributed across "
+         "design, development, testing and documentation.", size=9, italic=True,
+         color=GREY)
 
 doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 
@@ -858,9 +860,9 @@ add_table(
         ["Keeping the UI in sync with data changes across multiple screens.",
          "Used a single ChangeNotifier (Provider) as the source of truth; "
          "notifyListeners() rebuilds all watching widgets automatically."],
-        ["Persisting structured data with a lightweight dependency.",
-         "Serialised each Transaction to JSON and stored the list with "
-         "shared_preferences, avoiding a full database."],
+        ["Storing data in a real cloud database with live updates.",
+         "Used Cloud Firestore — one document per transaction — with a snapshot "
+         "listener so the UI updates instantly and data syncs across devices."],
         ["Drawing a trend chart without a heavy charting library.",
          "Implemented a custom CustomPainter to draw the line chart, average line "
          "and data points."],
@@ -879,19 +881,19 @@ doc.add_heading("10.1 Conclusion", level=2)
 add_para(
     "My Wallet successfully meets all of the assignment's functional requirements. It "
     "delivers complete CRUD functionality, a clean and responsive Material 3 "
-    "interface, Provider-based local state management, and on-device persistence. "
-    "Building the app gave the team hands-on experience with Flutter, the Provider "
-    "pattern, automated testing, and collaborative development with Git and GitHub."
+    "interface, Provider-based state management, and realtime cloud persistence with "
+    "Cloud Firestore. Building the app gave the team hands-on experience with Flutter, "
+    "Firebase, the Provider pattern, automated testing, and collaborative development "
+    "with Git and GitHub."
 )
 doc.add_heading("10.2 Future Enhancements", level=2)
 add_bullets([
-    "Cloud sync and multi-device support via a backend or Firebase.",
-    "Optional user accounts with secure authentication.",
-    "Export to CSV/PDF and receipt photo attachments.",
-    "Recurring transactions and bill reminders (notifications).",
+    "User accounts with secure authentication (Firebase Auth).",
+    "Production-grade Firestore security rules (per-user data isolation).",
+    "Offline caching so the app works smoothly with a poor connection.",
+    "Export to CSV/PDF and receipt photo attachments (Firebase Storage).",
+    "Recurring transactions and bill reminders (push notifications).",
     "Dark mode and multiple-currency support.",
-    "Migrating storage from shared_preferences to a SQLite database (sqflite/drift) "
-    "for larger data volumes and richer queries.",
 ])
 
 doc.add_heading("11. References", level=1)
@@ -899,7 +901,8 @@ refs = [
     "Flutter Documentation. https://docs.flutter.dev",
     "Dart Language Tour. https://dart.dev/guides",
     "Provider package. https://pub.dev/packages/provider",
-    "shared_preferences package. https://pub.dev/packages/shared_preferences",
+    "Cloud Firestore (FlutterFire). https://firebase.flutter.dev/docs/firestore/overview",
+    "Firebase Documentation. https://firebase.google.com/docs",
     "intl package. https://pub.dev/packages/intl",
     "Material Design 3. https://m3.material.io",
 ]

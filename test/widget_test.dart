@@ -1,25 +1,30 @@
-// Smoke test: the app builds and the main navigation renders.
+// Smoke test: the main navigation renders. Uses a fake Firestore so the test
+// runs without a real Firebase connection.
 
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
-import 'package:expense_tracker/main.dart';
+import 'package:expense_tracker/providers/transaction_provider.dart';
+import 'package:expense_tracker/screens/main_screen.dart';
 
 void main() {
-  testWidgets('App builds and shows the bottom navigation', (tester) async {
-    SharedPreferences.setMockInitialValues({});
+  testWidgets('Main navigation renders', (tester) async {
+    final fake = FakeFirebaseFirestore();
 
-    await tester.pumpWidget(const MyApp());
-    await tester.pump(); // let the provider's async load settle
+    await tester.pumpWidget(
+      ChangeNotifierProvider(
+        create: (_) => TransactionProvider(firestore: fake),
+        child: const MaterialApp(home: MainScreen()),
+      ),
+    );
+    await tester.pump();
 
     // Bottom navigation labels are present.
     expect(find.text('Ledger'), findsOneWidget);
     expect(find.text('Charts'), findsOneWidget);
     expect(find.text('Record'), findsOneWidget);
     expect(find.text('My'), findsOneWidget);
-
-    // Empty ledger state is shown on first launch.
-    expect(find.byType(MaterialApp), findsOneWidget);
   });
 }

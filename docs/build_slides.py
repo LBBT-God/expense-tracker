@@ -155,14 +155,14 @@ text(s, 0.95, 3.15, 7.4, 0.7,
      [{"t": "Personal Expense Tracker", "size": 28, "bold": True, "color": WHITE,
        "font": HEAD_FONT}])
 text(s, 0.95, 3.95, 7.4, 0.6,
-     [{"t": "A cross-platform CRUD mobile app built with Flutter",
+     [{"t": "A cross-platform CRUD mobile app built with Flutter & Firebase",
        "size": 16, "color": CREAMTXT, "italic": True}])
 # bottom meta
 rect(s, 0.95, 5.35, 0.5, 0.06, AMBER)
 text(s, 0.95, 5.55, 7.6, 1.2,
-     [{"t": "Mobile Application Development  ·  Project Pitch & Demo",
+     [{"t": "DES3113 — Mobile App Design & Development  ·  Pitch & Demo",
        "size": 14, "color": WHITE, "sa": 4},
-      {"t": "Group [Name]  ·  Members 1–5  ·  June 2026",
+      {"t": "Team of 5  ·  Lecturer: Dr. Ahmad Wiraputra bin Selamat  ·  2026",
        "size": 13, "color": CREAMTXT}])
 # right phone mockup
 phone_placeholder(s, 9.0, 1.5, 3.3, 4.6, "Ledger / Home", dark=True)
@@ -176,13 +176,13 @@ text(s, 0.9, 1.6, 6.2, 2.0,
      [{"t": "Where does my money actually go?", "size": 20, "bold": True,
        "color": INK, "font": HEAD_FONT, "sa": 10},
       {"t": "Small, frequent purchases are easy to forget and quickly add up. "
-            "Most finance apps are cluttered, ad-heavy, or force the user to "
-            "create an online account and hand over their data.",
+            "Most finance apps are cluttered, ad-heavy, or hide the basics "
+            "behind a paywall.",
        "size": 15, "color": GREY, "line": 1.2}])
 probs = [
     ("🧾", "Hard to track", "Daily cash spending slips through the cracks."),
     ("🧩", "Too complex", "Existing apps are bloated and confusing."),
-    ("🔒", "Privacy worries", "Users don't want finances pushed to the cloud."),
+    ("💾", "No backup", "Records trapped on one phone — lost if it's gone."),
     ("📉", "No insight", "Spending patterns and budgets aren't obvious."),
 ]
 y = 1.7
@@ -199,18 +199,18 @@ for i, (ic, h, d) in enumerate(probs):
 s = slide(WHITE)
 title(s, "The Solution")
 text(s, 0.9, 1.55, 7.0, 2.4,
-     [{"t": "A fast, private, on-device ledger", "size": 20, "bold": True,
+     [{"t": "A fast, simple, cloud-backed ledger", "size": 20, "bold": True,
        "color": INK, "font": HEAD_FONT, "sa": 10},
       {"t": "My Wallet lets you record income and expenses in seconds, browse "
             "them by day and month, see spending trends, and stay on budget — "
-            "with every record stored privately on your own device.",
+            "with every record stored safely in the cloud and synced in realtime.",
        "size": 15, "color": GREY, "line": 1.25, "sa": 12}])
 points = [
     "Record a transaction in just a few taps",
     "Browse by day, switch between months",
     "Charts and category breakdown",
     "Monthly budget tracking",
-    "100% offline — no account, no cloud",
+    "Realtime cloud sync with Firebase",
 ]
 for i, pt in enumerate(points):
     yy = 3.55 + i * 0.62
@@ -230,7 +230,7 @@ feats = [
     ("📊", "Charts", "Week / Month / Year trend + category breakdown."),
     ("🎯", "Budget", "Set a monthly limit; track remaining balance."),
     ("👤", "Statistics", "Lifetime income, expense, balance & activity."),
-    ("💾", "Local Storage", "Saved on-device with shared_preferences."),
+    ("☁️", "Cloud Database", "Stored in Cloud Firestore, synced in realtime."),
 ]
 cw, ch, gx, gy = 3.74, 1.62, 0.3, 0.3
 x0, y0 = 0.9, 1.7
@@ -283,12 +283,12 @@ layers = [
     ("UI Layer", "Ledger · Charts · Discover · Profile · Add / Edit", AMBER, INK),
     ("State Layer", "TransactionProvider  (ChangeNotifier) — CRUD, totals, budget", DARK, WHITE),
     ("Model Layer", "Transaction · Category · TransactionType", RGBColor(0x55,0x55,0x55), WHITE),
-    ("Storage Layer", "SharedPreferences  (local JSON key/value)", RGBColor(0x80,0x80,0x80), WHITE),
+    ("Storage Layer", "Cloud Firestore  (realtime NoSQL database)", RGBColor(0x80,0x80,0x80), WHITE),
 ]
 y = 2.25
 lw_ = 8.6
 x = 0.9
-arrows = ["context.watch / read", "toJson / fromJson", "load / save"]
+arrows = ["context.watch / read", "toMap / fromMap", "snapshots / set / delete"]
 for i, (name, desc, col, tcol) in enumerate(layers):
     card(s, x, y, lw_, 0.92, col, radius=0.05)
     text(s, x + 0.35, y, lw_ - 0.6, 0.92,
@@ -307,7 +307,7 @@ text(s, 10.1, 2.55, 2.1, 4.0,
       {"t": "• Single source of truth", "size": 12, "color": GREY, "sa": 6},
       {"t": "• UI rebuilds on change", "size": 12, "color": GREY, "sa": 6},
       {"t": "• Logic easy to test", "size": 12, "color": GREY, "sa": 6},
-      {"t": "• No network needed", "size": 12, "color": GREY, "sa": 6}])
+      {"t": "• Realtime cloud sync", "size": 12, "color": GREY, "sa": 6}])
 
 # ============================================================
 # SLIDE 7 — TECH STACK
@@ -317,10 +317,10 @@ title(s, "Technology Stack")
 stack = [
     ("Flutter", "Cross-platform UI toolkit (Material 3)"),
     ("Dart", "Application language (SDK ^3.11)"),
+    ("firebase_core", "Firebase initialisation"),
+    ("cloud_firestore", "Realtime cloud database (CRUD)"),
     ("provider", "ChangeNotifier state management"),
-    ("shared_preferences", "Local on-device persistence"),
-    ("intl", "Date & number formatting"),
-    ("uuid", "Unique transaction IDs"),
+    ("intl · uuid", "Formatting & unique IDs"),
     ("flutter_test", "Unit & widget testing"),
     ("Git + GitHub", "Version control & collaboration"),
 ]
@@ -349,29 +349,28 @@ text(s, 0.9, 1.55, 5.6, 4.6,
             "the list, saves to storage, then calls notifyListeners() so every "
             "watching widget rebuilds automatically.", "size": 13.5, "color": GREY,
        "line": 1.25, "sa": 12},
-      {"t": "On-device persistence", "size": 17, "bold": True, "color": INK,
+      {"t": "Cloud persistence", "size": 17, "bold": True, "color": INK,
        "font": HEAD_FONT, "sa": 8},
-      {"t": "Transactions are serialised to JSON and saved as a string list with "
-            "shared_preferences — lightweight and fully offline.",
+      {"t": "Each transaction is a document in Cloud Firestore. A realtime snapshot "
+            "listener streams changes back, so the UI updates instantly across devices.",
        "size": 13.5, "color": GREY, "line": 1.25}])
 # code card
 card(s, 6.9, 1.6, 5.5, 4.5, CHARCOAL, radius=0.04)
 code = [
-    ("Future<void> add(Transaction t) async {", AMBER),
-    ("  _transactions.add(t);", WHITE),
-    ("  await _save();", WHITE),
+    ("// Realtime read", CREAMTXT),
+    ("_txCol.snapshots().listen((snap) {", AMBER),
+    ("  _transactions = snap.docs", WHITE),
+    ("      .map((d) =>", WHITE),
+    ("          Transaction.fromMap(d.data()))", WHITE),
+    ("      .toList();", WHITE),
     ("  notifyListeners();", WHITE),
-    ("}", AMBER),
+    ("});", AMBER),
     ("", WHITE),
-    ("Future<void> _save() async {", AMBER),
-    ("  final prefs =", WHITE),
-    ("      await SharedPreferences.getInstance();", WHITE),
-    ("  await prefs.setStringList(", WHITE),
-    ("    'transactions',", CREAMTXT),
-    ("    _transactions.map((t) => t.toJson())", WHITE),
-    ("        .toList(),", WHITE),
-    ("  );", WHITE),
-    ("}", AMBER),
+    ("// Create / Update", CREAMTXT),
+    ("await _txCol.doc(t.id).set(t.toMap());", WHITE),
+    ("", WHITE),
+    ("// Delete", CREAMTXT),
+    ("await _txCol.doc(id).delete();", WHITE),
 ]
 tb = s.shapes.add_textbox(Inches(7.15), Inches(1.85), Inches(5.1), Inches(4.0))
 tf = tb.text_frame; tf.word_wrap = True
@@ -426,7 +425,7 @@ title(s, "Testing")
 # big stat
 card(s, 0.9, 1.75, 4.0, 2.3, CHARCOAL, radius=0.06)
 text(s, 0.9, 2.0, 4.0, 1.4,
-     [{"t": "11 / 11", "size": 52, "bold": True, "color": AMBER,
+     [{"t": "12 / 12", "size": 52, "bold": True, "color": AMBER,
        "align": PP_ALIGN.CENTER, "font": HEAD_FONT}],
      anchor=MSO_ANCHOR.TOP)
 text(s, 0.9, 3.25, 4.0, 0.7,
@@ -438,9 +437,9 @@ text(s, 5.3, 1.75, 7.0, 0.5,
        "font": HEAD_FONT}])
 tests = [
     ("Unit — Model", "Serialisation round-trips, copyWith, category labels."),
-    ("Unit — Provider", "add · update · delete · clearAll · budget · totals."),
+    ("Unit — Provider", "CRUD + budget on an in-memory test database."),
     ("Widget", "App builds and the bottom navigation renders."),
-    ("Manual", "8 end-to-end flows incl. persistence after restart."),
+    ("Manual", "9 flows incl. data appearing live in the Firebase console."),
 ]
 for i, (h, d) in enumerate(tests):
     yy = 2.35 + i * 0.92
@@ -455,11 +454,11 @@ for i, (h, d) in enumerate(tests):
 s = slide(WHITE)
 title(s, "Team & Contributions")
 team = [
-    ("Member 1", "Project lead · State management & data model"),
-    ("Member 2", "UI/UX · Ledger & Detail screens"),
-    ("Member 3", "Add/Edit & Charts screens"),
-    ("Member 4", "Discover, Profile · Persistence & testing"),
-    ("Member 5", "Documentation, report & presentation"),
+    ("Sazit Ul Islam", "Project lead · State management & data model"),
+    ("Nur Aisyatul Najwa binti Mohamad Nasir", "UI/UX · Ledger & Detail screens"),
+    ("Nurfatin Aqilah binti Zolkifli", "Add/Edit & Charts screens"),
+    ("Shi Kaiyan", "Discover, Profile · Firebase & testing"),
+    ("Mst Samiya Haque Kotha", "Documentation, report & presentation"),
 ]
 y0 = 1.8
 for i, (name, role) in enumerate(team):
@@ -467,11 +466,11 @@ for i, (name, role) in enumerate(team):
     card(s, 0.9, yy, 11.5, 0.78, LGREY if i % 2 == 0 else WHITE,
          line=(None if i % 2 == 0 else MGREY), lw=1.0, radius=0.08)
     badge(s, 1.15, yy + 0.13, 0.52, AMBER, str(i + 1), gcolor=INK, gsize=18)
-    text(s, 1.95, yy, 4.0, 0.78,
-         [{"t": name, "size": 15, "bold": True, "color": INK}],
+    text(s, 1.95, yy, 5.1, 0.78,
+         [{"t": name, "size": 12.5, "bold": True, "color": INK}],
          anchor=MSO_ANCHOR.MIDDLE)
-    text(s, 5.6, yy, 6.6, 0.78,
-         [{"t": role, "size": 13.5, "color": GREY}], anchor=MSO_ANCHOR.MIDDLE)
+    text(s, 7.2, yy, 5.0, 0.78,
+         [{"t": role, "size": 12, "color": GREY}], anchor=MSO_ANCHOR.MIDDLE)
 text(s, 0.9, 6.55, 11.5, 0.5,
      [{"t": "Every member contributed across design, development, testing & docs. "
             "Source managed with Git + GitHub.", "size": 11.5, "italic": True,
@@ -487,7 +486,7 @@ text(s, 0.9, 1.7, 5.6, 0.5,
        "font": HEAD_FONT}])
 ch = [
     "Keeping UI in sync → single Provider",
-    "Structured storage → JSON + prefs",
+    "Cloud data → Firestore + realtime listener",
     "Trend chart → custom CustomPainter",
     "Valid input → keypad guard rules",
 ]
@@ -500,11 +499,11 @@ text(s, 6.9, 1.7, 5.5, 0.5,
      [{"t": "Future enhancements", "size": 17, "bold": True, "color": INK,
        "font": HEAD_FONT}])
 fut = [
-    "Cloud sync & multi-device",
+    "User accounts (Firebase Auth)",
+    "Firestore security rules",
     "Export to CSV / PDF",
     "Recurring bills & reminders",
     "Dark mode & multi-currency",
-    "SQLite for larger datasets",
 ]
 for i, f in enumerate(fut):
     yy = 2.4 + i * 0.64
@@ -523,10 +522,10 @@ text(s, 0.95, 3.85, 11.5, 0.7,
      [{"t": "My Wallet — Personal Expense Tracker", "size": 22, "bold": True,
        "color": WHITE, "font": HEAD_FONT}])
 text(s, 0.95, 4.6, 11.5, 0.6,
-     [{"t": "Built with Flutter  ·  Provider  ·  shared_preferences",
+     [{"t": "Built with Flutter  ·  Firebase  ·  Cloud Firestore",
        "size": 15, "color": CREAMTXT, "italic": True}])
 text(s, 0.95, 5.5, 11.5, 0.6,
-     [{"t": "Questions & demo  ·  github.com/[your-repo]", "size": 14,
+     [{"t": "Questions & demo  ·  github.com/LBBT-God/expense-tracker", "size": 14,
        "color": AMBER}])
 
 out = r"D:\des3113\docs\My_Wallet_Presentation.pptx"

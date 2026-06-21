@@ -96,12 +96,14 @@ class Transaction {
 
   factory Transaction.fromMap(Map<String, dynamic> map) {
     return Transaction(
-      id: map['id'],
-      title: map['title'],
-      amount: map['amount'],
-      category: Category.values[map['category']],
-      date: DateTime.fromMillisecondsSinceEpoch(map['date']),
-      type: TransactionType.values[map['type']],
+      id: map['id'] as String,
+      title: map['title'] as String,
+      // Firestore returns numbers as int when they are whole; normalise to the
+      // expected types so JSON and Firestore data both decode safely.
+      amount: (map['amount'] as num).toDouble(),
+      category: Category.values[(map['category'] as num).toInt()],
+      date: DateTime.fromMillisecondsSinceEpoch((map['date'] as num).toInt()),
+      type: TransactionType.values[(map['type'] as num).toInt()],
       note: map['note'] ?? '',
     );
   }

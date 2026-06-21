@@ -1,10 +1,31 @@
+import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart' hide Transaction;
 import 'package:flutter/foundation.dart' hide Category;
-import 'package:shared_preferences/shared_preferences.dart';
 import '../models/transaction.dart';
 
+/// Holds the app's data and performs all CRUD against Cloud Firestore.
+///
+/// Transactions live in the `transactions` collection (one document per record,
+/// keyed by its id). The monthly budget is stored in `settings/app`. A realtime
+/// snapshot listener keeps the in-memory list in sync, so any add/update/delete
+/// is reflected in the UI automatically.
 class TransactionProvider extends ChangeNotifier {
+  final FirebaseFirestore _db;
   List<Transaction> _transactions = [];
   double _monthlyBudget = 0;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _sub;
+
+  /// [firestore] can be injected in tests (e.g. FakeFirebaseFirestore).
+  TransactionProvider({FirebaseFirestore? firestore})
+      : _db = firestore ?? FirebaseFirestore.instance {
+    _listenTransactions();
+    _loadBudget();
+  }
+
+  CollectionReference<Map<String, dynamic>> get _txCol =>
+      _db.collection('transactions');
+  DocumentReference<Map<String, dynamic>> get _settingsDoc =>
+      _db.collection('settings').doc('app');
 
   List<Transaction> get allTransactions => List.unmodifiable(_transactions);
 
@@ -28,57 +49,56 @@ class TransactionProvider extends ChangeNotifier {
     }
   }
 
-  TransactionProvider() {
-    _load();
-  }
-
-  Future<void> _load() async {
-    final prefs = await SharedPreferences.getInstance();
-    final data = prefs.getStringList('transactions') ?? [];
-    _transactions = data.map((s) => Transaction.fromJson(s)).toList();
-    _monthlyBudget = prefs.getDouble('monthly_budget') ?? 0;
-    notifyListeners();
-  }
-
-  Future<void> _save() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-      'transactions',
-      _transactions.map((t) => t.toJson()).toList(),
-    );
-  }
-
-  Future<void> add(Transaction t) async {
-    _transactions.add(t);
-    await _save();
-    notifyListeners();
-  }
-
-  Future<void> update(Transaction t) async {
-    final i = _transactions.indexWhere((x) => x.id == t.id);
-    if (i != -1) {
-      _transactions[i] = t;
-      await _save();
+  // ── Read (realtime) ──
+  void _listenTransactions() {
+    _sub = _txCol.snapshots().listen((snapshot) {
+      _transactions = snapshot.docs
+          .map((d) => Transaction.fromMap(d.data()))
+          .toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
       notifyListeners();
-    }
+    });
   }
 
-  Future<void> delete(String id) async {
-    _transactions.removeWhere((t) => t.id == id);
-    await _save();
+  Future<void> _loadBudget() async {
+    final snap = await _settingsDoc.get();
+    _monthlyBudget = (snap.data()?['monthlyBudget'] as num?)?.toDouble() ?? 0;
     notifyListeners();
+  }
+
+  // ── Create ──
+  Future<void> add(Transaction t) async {
+    await _txCol.doc(t.id).set(t.toMap());
+  }
+
+  // ── Update ──
+  Future<void> update(Transaction t) async {
+    await _txCol.doc(t.id).set(t.toMap());
+  }
+
+  // ── Delete ──
+  Future<void> delete(String id) async {
+    await _txCol.doc(id).delete();
   }
 
   Future<void> setBudget(double amount) async {
     _monthlyBudget = amount;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble('monthly_budget', amount);
+    await _settingsDoc.set({'monthlyBudget': amount}, SetOptions(merge: true));
     notifyListeners();
   }
 
   Future<void> clearAll() async {
-    _transactions.clear();
-    await _save();
-    notifyListeners();
+    final snap = await _txCol.get();
+    final batch = _db.batch();
+    for (final doc in snap.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
   }
 }
