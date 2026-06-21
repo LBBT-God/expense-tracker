@@ -83,23 +83,24 @@ and stats look full.
 
 This is the part that proves the app uses a real database.
 
-**A. On the project owner's laptop (Shi Kaiyan):**
-1. Go to https://console.firebase.google.com → open project **des3113**
-2. Left menu → **Build → Firestore Database**
-3. Open the **`transactions`** collection
-4. Now add a new entry in the app → **it appears in the console instantly** (realtime sync). Edit/delete in the app → the document updates/disappears live.
+✅ **Everyone on the team has been added to the Firebase project**, so you can each open
+the console with your **own Google account** — no extra setup needed.
 
-**B. Letting other members open the console too (optional):**
-By default only the owner's Google account can open the Firebase console. To give a
-teammate access:
-1. Firebase console → **⚙️ Project settings → Users and permissions**
-2. **Add member** → enter their Gmail → role **Viewer** → save
-3. They can now open the console and show the data themselves.
+**Open the database console:**
+1. Sign in to https://console.firebase.google.com with the Google (Gmail) account you gave to Shi Kaiyan
+2. Open the project **des3113**
+3. Left menu → **Build → Firestore Database**, or use this direct link:
+   👉 https://console.firebase.google.com/project/des3113-7d1fe/firestore/data
+4. Open the **`transactions`** collection
 
-**C. Easiest team demo (no console access needed):**
-Because everyone shares the same Firebase project, an entry added on **one** member's
-laptop shows up in **everyone's** app. Add a record on laptop A, refresh laptop B — it's
-there. That alone demonstrates cloud storage and sync.
+**Demo the realtime sync (do this live in the presentation):**
+- Add a new entry in the app → it appears in the console **instantly**
+- Edit or delete it in the app → the document updates / disappears live
+- Bonus: because everyone shares the same project, a record added on **one** laptop shows
+  up in **everyone's** app — add on laptop A, refresh laptop B, it's there.
+
+> Can't see the project? Make sure you're signed in with the **exact Gmail** you sent to
+> Shi Kaiyan, and accept any "you've been added to a Firebase project" invitation email.
 
 ---
 
