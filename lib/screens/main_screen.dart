@@ -3,7 +3,6 @@ import 'ledger_screen.dart';
 import 'charts_screen.dart';
 import 'add_record_screen.dart';
 import 'discover_screen.dart';
-import 'profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -15,12 +14,11 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _index = 0;
 
-  // 4 pages; center button is NOT a page (opens modal)
+  // 3 pages; the center "Record" tab is NOT a page (opens a modal).
   static const _pages = [
     LedgerScreen(),
     ChartsScreen(),
     DiscoverScreen(),
-    ProfileScreen(),
   ];
 
   void _openRecord() {
@@ -71,86 +69,50 @@ class _BottomNav extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          // Ledger
-          Expanded(
-            child: _NavItem(
-              icon: Icons.receipt_long_outlined,
-              activeIcon: Icons.receipt_long,
-              label: 'Ledger',
-              selected: currentIndex == 0,
-              onTap: () => onTap(0),
-            ),
-          ),
-          // Charts
-          Expanded(
-            child: _NavItem(
-              icon: Icons.bar_chart_outlined,
-              activeIcon: Icons.bar_chart,
-              label: 'Charts',
-              selected: currentIndex == 1,
-              onTap: () => onTap(1),
-            ),
-          ),
-          // CENTER: Record button
-          GestureDetector(
-            onTap: onRecord,
-            child: SizedBox(
-              width: 80,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 52,
-                    height: 52,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFFFC107),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0x55FFC107),
-                          blurRadius: 12,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(Icons.add, color: Colors.white, size: 28),
-                  ),
-                  const SizedBox(height: 2),
-                  const Text(
-                    'Record',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Color(0xFFFFC107),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+      child: SafeArea(
+        top: false,
+        // Four equal-width flat tabs. "Record" opens the Add screen as a modal.
+        child: Row(
+          children: [
+            Expanded(
+              child: _NavItem(
+                icon: Icons.receipt_long_outlined,
+                activeIcon: Icons.receipt_long,
+                label: 'Ledger',
+                selected: currentIndex == 0,
+                onTap: () => onTap(0),
               ),
             ),
-          ),
-          // Discover
-          Expanded(
-            child: _NavItem(
-              icon: Icons.explore_outlined,
-              activeIcon: Icons.explore,
-              label: 'Discover',
-              selected: currentIndex == 2,
-              onTap: () => onTap(2),
+            Expanded(
+              child: _NavItem(
+                icon: Icons.bar_chart_outlined,
+                activeIcon: Icons.bar_chart,
+                label: 'Charts',
+                selected: currentIndex == 1,
+                onTap: () => onTap(1),
+              ),
             ),
-          ),
-          // Profile
-          Expanded(
-            child: _NavItem(
-              icon: Icons.person_outline,
-              activeIcon: Icons.person,
-              label: 'My',
-              selected: currentIndex == 3,
-              onTap: () => onTap(3),
+            Expanded(
+              child: _NavItem(
+                icon: Icons.add_circle_outline,
+                activeIcon: Icons.add_circle,
+                label: 'Record',
+                selected: false,
+                accent: true,
+                onTap: onRecord,
+              ),
             ),
-          ),
-        ],
+            Expanded(
+              child: _NavItem(
+                icon: Icons.explore_outlined,
+                activeIcon: Icons.explore,
+                label: 'Discover',
+                selected: currentIndex == 2,
+                onTap: () => onTap(2),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -163,31 +125,37 @@ class _NavItem extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
+  // When true the item always uses the accent colour (used by the
+  // "Record" action tab, which is never a selected page).
+  final bool accent;
+
   const _NavItem({
     required this.icon,
     required this.activeIcon,
     required this.label,
     required this.selected,
     required this.onTap,
+    this.accent = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? const Color(0xFFFFC107) : Colors.grey[500]!;
+    final highlighted = selected || accent;
+    final color = highlighted ? const Color(0xFFFFC107) : Colors.grey[500]!;
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(selected ? activeIcon : icon, color: color, size: 24),
+          Icon(highlighted ? activeIcon : icon, color: color, size: 24),
           const SizedBox(height: 2),
           Text(
             label,
             style: TextStyle(
               color: color,
               fontSize: 11,
-              fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+              fontWeight: highlighted ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
         ],

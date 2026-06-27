@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Generate the project report (.docx) for My Wallet - Personal Expense Tracker."""
+import os
 import docx
 from docx import Document
 from docx.shared import Pt, RGBColor, Cm, Emu
@@ -143,8 +144,18 @@ def add_code(code, caption=None):
         add_para("", space_after=4)
 
 
-def add_placeholder(label, caption, width_cm=8.0, height_cm=5.2):
-    """A bordered grey box that stands in for a screenshot."""
+def add_placeholder(label, caption, width_cm=8.0, height_cm=5.2, image=None, img_h=9.0):
+    """Insert a real screenshot if `image` is given and present on disk;
+    otherwise a bordered grey box that stands in for a screenshot."""
+    if image:
+        img_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), image)
+        if os.path.exists(img_path):
+            ip = doc.add_paragraph()
+            ip.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            ip.add_run().add_picture(img_path, height=Cm(img_h))
+            add_para(caption, size=9, italic=True, color=GREY,
+                     align=WD_ALIGN_PARAGRAPH.CENTER, space_after=10, space_before=2)
+            return
     tbl = doc.add_table(rows=1, cols=1)
     tbl.alignment = WD_TABLE_ALIGNMENT.CENTER
     cell = tbl.cell(0, 0)
@@ -232,7 +243,13 @@ def hrule_after_heading():
 # ============================================================
 # COVER PAGE
 # ============================================================
-add_para("", space_before=40)
+# University logo at the very top of the cover page.
+_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "upsi_logo.png")
+if os.path.exists(_logo):
+    _lp = doc.add_paragraph()
+    _lp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    _lp.add_run().add_picture(_logo, width=Cm(11.43), height=Cm(5.22))
+add_para("", space_before=12)
 add_para("DES3113 — MOBILE APPLICATION DESIGN & DEVELOPMENT", size=12, bold=True,
          color=GREY, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=4)
 add_para("Project Report", size=12, italic=True, color=GREY,
@@ -252,7 +269,8 @@ add_para("A Cross-Platform CRUD Mobile Application Built with Flutter & Firebase
 
 add_placeholder("App Home Screen (Ledger)",
                 "Figure 1: The My Wallet home screen.",
-                width_cm=7.5, height_cm=6.0)
+                width_cm=7.5, height_cm=6.0,
+                image="screenshots/01_ledger.png", img_h=6.0)
 
 add_para("", space_after=20)
 # Group box
@@ -265,7 +283,7 @@ add_table(
         ["2", "Nur Aisyatul Najwa binti Mohamad Nasir", "[Student ID]",
          "UI/UX — Ledger & Detail"],
         ["3", "Nurfatin Aqilah binti Zolkifli", "[Student ID]", "Add/Edit & Charts"],
-        ["4", "Shi Kaiyan", "[Student ID]", "Discover, Profile & Testing"],
+        ["4", "Shi Kaiyan", "[Student ID]", "Discover & Testing"],
         ["5", "Mst Samiya Haque Kotha", "[Student ID]", "Docs & Presentation"],
     ],
     widths=[Cm(1.0), Cm(6.6), Cm(2.8), Cm(5.6)],
@@ -334,8 +352,8 @@ add_numbers([
 doc.add_heading("1.4 Scope", level=2)
 add_para(
     "The project covers a fully functional expense-tracking app with transaction "
-    "management, monthly browsing, charts, budget tracking, and a profile/statistics "
-    "page. The following are intentionally out of scope for this assignment: "
+    "management, monthly browsing, charts, and budget tracking. The following are "
+    "intentionally out of scope for this assignment: "
     "multi-user accounts, bank integration, and user login/authentication. These are "
     "discussed as future enhancements in Section 10."
 )
@@ -374,8 +392,8 @@ add_table(
          "record in a full Detail view."],
         ["Update", "Edit an existing transaction — the Add screen is reused in "
          "“edit” mode, pre-filled with the record's data."],
-        ["Delete", "Remove a single record with a confirmation dialog, or clear "
-         "all records from the Profile page."],
+        ["Delete", "Remove a single record from its Detail screen with a "
+         "confirmation dialog."],
     ],
     widths=[Cm(3.5), Cm(12.5)],
 )
@@ -427,7 +445,7 @@ add_para(
 add_code(
     "  +-------------------------------------------------+\n"
     "  |        UI Layer  (Screens & Widgets)            |\n"
-    "  |  Ledger | Charts | Discover | Profile | AddEdit |\n"
+    "  |      Ledger | Charts | Discover | AddEdit       |\n"
     "  +------------------------+------------------------+\n"
     "            context.watch() |  context.read()\n"
     "                            v\n"
@@ -463,7 +481,6 @@ add_code(
     "    detail_screen.dart          # READ one + entry to UPDATE / DELETE\n"
     "    charts_screen.dart          # Line chart + category breakdown\n"
     "    discover_screen.dart        # Monthly bill + budget tracking\n"
-    "    profile_screen.dart         # Stats, settings, clear-all\n"
     "  widgets/\n"
     "    transaction_tile.dart       # Reusable list row\n"
     "test/\n"
@@ -550,11 +567,12 @@ add_code(
 
 doc.add_heading("3.6 Navigation Structure", level=2)
 add_para(
-    "The app uses a custom bottom navigation bar with four primary tabs — Ledger, "
-    "Charts, Discover and Profile — plus a central circular “Record” button "
-    "that opens the Add screen as a full-screen modal. An IndexedStack preserves the "
-    "scroll position and state of each tab when the user switches between them. The "
-    "Detail screen is pushed on top of the navigation stack with MaterialPageRoute."
+    "The app uses a custom bottom navigation bar with four equal-width tabs — Ledger, "
+    "Charts, Record and Discover. The Record tab opens the Add screen as a full-screen "
+    "modal, while Ledger, Charts and Discover are pages held in an IndexedStack that "
+    "preserves the scroll position and state of each tab when the user switches between "
+    "them. The Detail screen is pushed on top of the navigation stack with "
+    "MaterialPageRoute."
 )
 
 doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
@@ -604,17 +622,17 @@ add_para(
     "under date headers, each group rendered as a white rounded card. Tapping a row "
     "opens its Detail screen.")
 add_placeholder("Ledger Screen", "Figure 4: Transactions grouped by day.",
-                width_cm=7.0, height_cm=5.5)
+                width_cm=7.0, height_cm=5.5, image="screenshots/01_ledger.png")
 
 doc.add_heading("4.3.2 Add / Edit Record", level=3)
 add_para(
-    "Opened from the central Record button (or the edit icon on a Detail screen), this "
+    "Opened from the Record tab (or the edit icon on a Detail screen), this "
     "screen has an Expense/Income tab bar, a live amount display, a category grid, a "
     "date picker, a note field, and a custom numeric keypad with a Save key. In edit "
     "mode every field is pre-filled with the existing record.")
 add_placeholder("Add / Edit Record Screen",
                 "Figure 5: Recording a transaction with the keypad.",
-                width_cm=7.0, height_cm=5.5)
+                width_cm=7.0, height_cm=5.5, image="screenshots/02_add_record.png")
 
 doc.add_heading("4.3.3 Detail", level=3)
 add_para(
@@ -622,7 +640,7 @@ add_para(
     "type, category, date, time and note, plus Edit and Delete actions in the app bar "
     "and a prominent Delete button.")
 add_placeholder("Detail Screen", "Figure 6: Full record with edit/delete actions.",
-                width_cm=7.0, height_cm=5.5)
+                width_cm=7.0, height_cm=5.5, image="screenshots/03_detail.png")
 
 doc.add_heading("4.3.4 Charts", level=3)
 add_para(
@@ -630,16 +648,16 @@ add_para(
     "chart (drawn with CustomPainter), and a category breakdown lists each category's "
     "total, percentage and a progress bar.")
 add_placeholder("Charts Screen", "Figure 7: Trend line and category breakdown.",
-                width_cm=7.0, height_cm=5.5)
+                width_cm=7.0, height_cm=5.5, image="screenshots/04_charts.png")
 
-doc.add_heading("4.3.5 Discover and Profile", level=3)
+doc.add_heading("4.3.5 Discover", level=3)
 add_para(
-    "Discover shows the monthly bill and a budget card with a circular progress "
-    "indicator. Profile shows lifetime statistics, a financial summary, settings, and "
-    "a “Clear All Records” option.")
-add_placeholder("Discover & Profile Screens",
-                "Figure 8: Budget tracking and statistics.",
-                width_cm=7.0, height_cm=5.5)
+    "Discover shows the monthly bill — income, expense and balance — and a budget card "
+    "with a circular progress indicator, alongside quick statistics such as the total "
+    "number of records and active days.")
+add_placeholder("Discover Screen",
+                "Figure 8: Monthly bill and budget tracking.",
+                width_cm=7.0, height_cm=5.5, image="screenshots/05_discover.png")
 
 doc.add_heading("4.4 Responsive Design", level=2)
 add_para(
@@ -836,7 +854,7 @@ add_table(
          "screens; reusable TransactionTile widget.", "20%"],
         ["Nurfatin Aqilah\nbinti Zolkifli", "Add/Edit Record screen (keypad, category "
          "grid) and the Charts screen (custom line chart).", "20%"],
-        ["Shi Kaiyan", "Discover (budget) and Profile screens; Firebase/Firestore "
+        ["Shi Kaiyan", "Discover screen (monthly bill and budget); Firebase/Firestore "
          "wiring; automated tests.", "20%"],
         ["Mst Samiya Haque\nKotha", "Documentation, README, project report and "
          "presentation slides; manual testing.", "20%"],
@@ -917,12 +935,11 @@ doc.add_heading("Appendix A: Application Screenshots", level=1)
 add_para("Insert the captured screenshots of the running application in the boxes "
          "below.", italic=True, color=GREY)
 screens = [
-    ("Ledger (Home)", "Transactions grouped by day."),
-    ("Add / Edit Record", "Numeric keypad and category grid."),
-    ("Detail", "Single record with edit and delete."),
-    ("Charts", "Trend line and category breakdown."),
-    ("Discover", "Monthly bill and budget tracking."),
-    ("Profile", "Statistics, summary and settings."),
+    ("Ledger (Home)", "Transactions grouped by day.", "01_ledger.png"),
+    ("Add / Edit Record", "Numeric keypad and category grid.", "02_add_record.png"),
+    ("Detail", "Single record with edit and delete.", "03_detail.png"),
+    ("Charts", "Trend line and category breakdown.", "04_charts.png"),
+    ("Discover", "Monthly bill and budget tracking.", "05_discover.png"),
 ]
 # 2-column grid of placeholders
 grid = doc.add_table(rows=0, cols=2)
@@ -931,7 +948,7 @@ for i in range(0, len(screens), 2):
     cells = grid.add_row().cells
     for j in range(2):
         if i + j < len(screens):
-            name, cap = screens[i + j]
+            name, cap, img = screens[i + j]
             c = cells[j]
             c.width = Cm(8.0)
             shade_cell(c, "FAFAFA")
@@ -943,10 +960,15 @@ for i in range(0, len(screens), 2):
             rr.font.color.rgb = GREY
             p2 = c.add_paragraph()
             p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            r2 = p2.add_run("[ insert screenshot ]")
-            r2.font.size = Pt(8)
-            r2.font.italic = True
-            r2.font.color.rgb = RGBColor(0xAA, 0xAA, 0xAA)
+            _ip = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               "screenshots", img)
+            if os.path.exists(_ip):
+                p2.add_run().add_picture(_ip, height=Cm(8.0))
+            else:
+                r2 = p2.add_run("[ insert screenshot ]")
+                r2.font.size = Pt(8)
+                r2.font.italic = True
+                r2.font.color.rgb = RGBColor(0xAA, 0xAA, 0xAA)
             p3 = c.add_paragraph()
             p3.alignment = WD_ALIGN_PARAGRAPH.CENTER
             r3 = p3.add_run(cap)
@@ -956,7 +978,7 @@ for i in range(0, len(screens), 2):
             # row height
             tr = grid.rows[-1]._tr.get_or_add_trPr()
             h = OxmlElement("w:trHeight")
-            h.set(qn("w:val"), str(int(5.0 * 567)))
+            h.set(qn("w:val"), str(int(8.5 * 567)))
             h.set(qn("w:hRule"), "atLeast")
             tr.append(h)
 

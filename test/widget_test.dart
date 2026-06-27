@@ -25,6 +25,6 @@ void main() {
     expect(find.text('Ledger'), findsOneWidget);
     expect(find.text('Charts'), findsOneWidget);
     expect(find.text('Record'), findsOneWidget);
-    expect(find.text('My'), findsOneWidget);
+    expect(find.text('Discover'), findsOneWidget);
   });
 }
