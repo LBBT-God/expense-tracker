@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Generate the pitch + demo slides (.pptx) for My Wallet."""
+import os
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
@@ -23,6 +24,8 @@ CREAMTXT = RGBColor(0xBD, 0xBD, 0xBD)
 
 HEAD_FONT = "Trebuchet MS"
 BODY_FONT = "Calibri"
+
+BASE = os.path.dirname(os.path.abspath(__file__))
 
 prs = Presentation()
 prs.slide_width = Inches(13.333)
@@ -130,10 +133,23 @@ def title(s, txt, color=INK, top=0.55, l=0.85):
          [{"t": txt, "size": 30, "bold": True, "color": color, "font": HEAD_FONT}])
 
 
-def phone_placeholder(s, l, t, w, h, label, dark=False):
+def phone_placeholder(s, l, t, w, h, label, dark=False, image=None):
     fill = RGBColor(0x2C, 0x2C, 0x2C) if dark else LGREY
     bord = AMBER if dark else MGREY
     card(s, l, t, w, h, fill, line=bord, lw=1.5, radius=0.08)
+    img_path = os.path.join(BASE, image) if image else None
+    if img_path and os.path.exists(img_path):
+        # real screenshot — fit by height, centred, with a thin frame + caption
+        img_h = h - 0.62
+        pic = s.shapes.add_picture(img_path, Inches(l), Inches(t + 0.16),
+                                   height=Inches(img_h))
+        pic.left = int(Inches(l) + (Inches(w) - pic.width) / 2)
+        pic.line.color.rgb = bord
+        pic.line.width = Pt(1)
+        text(s, l, t + h - 0.42, w, 0.34,
+             [{"t": label, "size": 11.5, "bold": True, "align": PP_ALIGN.CENTER,
+               "color": (WHITE if dark else INK)}], anchor=MSO_ANCHOR.MIDDLE)
+        return
     tcol = AMBER if dark else GREY
     text(s, l, t, w, h,
          [{"t": "🖼", "size": 30, "align": PP_ALIGN.CENTER, "color": tcol, "sa": 6},
@@ -160,12 +176,13 @@ text(s, 0.95, 3.95, 7.4, 0.6,
 # bottom meta
 rect(s, 0.95, 5.35, 0.5, 0.06, AMBER)
 text(s, 0.95, 5.55, 7.6, 1.2,
-     [{"t": "DES3113 — Mobile App Design & Development  ·  Pitch & Demo",
+     [{"t": "DES3113 — Mobile App Design & Development  ·  Project Pitch",
        "size": 14, "color": WHITE, "sa": 4},
       {"t": "Team of 5  ·  Lecturer: Dr. Ahmad Wiraputra bin Selamat  ·  2026",
        "size": 13, "color": CREAMTXT}])
 # right phone mockup
-phone_placeholder(s, 9.0, 1.5, 3.3, 4.6, "Ledger / Home", dark=True)
+phone_placeholder(s, 9.0, 1.5, 3.3, 4.6, "Ledger", dark=True,
+                  image="screenshots/01_ledger.png")
 
 # ============================================================
 # SLIDE 2 — THE PROBLEM
@@ -217,7 +234,8 @@ for i, pt in enumerate(points):
     badge(s, 0.95, yy, 0.34, AMBER, "✓", gcolor=INK, gsize=13)
     text(s, 1.45, yy + 0.0, 6.4, 0.5,
          [{"t": pt, "size": 14.5, "color": INK}], anchor=MSO_ANCHOR.MIDDLE)
-phone_placeholder(s, 9.0, 1.55, 3.3, 4.7, "My Wallet — Ledger")
+phone_placeholder(s, 9.0, 1.55, 3.3, 4.7, "Budget & Stats",
+                  image="screenshots/05_discover.png")
 
 # ============================================================
 # SLIDE 4 — KEY FEATURES (grid)
@@ -229,7 +247,7 @@ feats = [
     ("➕", "Quick Record", "Custom keypad, category grid, date & note."),
     ("📊", "Charts", "Week / Month / Year trend + category breakdown."),
     ("🎯", "Budget", "Set a monthly limit; track remaining balance."),
-    ("👤", "Statistics", "Lifetime income, expense, balance & activity."),
+    ("📈", "Statistics", "Lifetime income, expense, balance & activity."),
     ("☁️", "Cloud Database", "Stored in Cloud Firestore, synced in realtime."),
 ]
 cw, ch, gx, gy = 3.74, 1.62, 0.3, 0.3
@@ -280,7 +298,7 @@ text(s, 0.9, 1.5, 11.5, 0.5,
      [{"t": "A clean, layered design — the UI never touches storage directly.",
        "size": 14, "color": GREY, "italic": True}])
 layers = [
-    ("UI Layer", "Ledger · Charts · Discover · Profile · Add / Edit", AMBER, INK),
+    ("UI Layer", "Ledger · Charts · Record · Discover · Add / Edit", AMBER, INK),
     ("State Layer", "TransactionProvider  (ChangeNotifier) — CRUD, totals, budget", DARK, WHITE),
     ("Model Layer", "Transaction · Category · TransactionType", RGBColor(0x55,0x55,0x55), WHITE),
     ("Storage Layer", "Cloud Firestore  (realtime NoSQL database)", RGBColor(0x80,0x80,0x80), WHITE),
@@ -382,40 +400,58 @@ for i, (ln, col) in enumerate(code):
     r.font.size = Pt(11.5); r.font.name = "Consolas"; r.font.color.rgb = col
 
 # ============================================================
-# SLIDE 9 — UI / UX DESIGN
+# SLIDE 9 — CLOUD DATABASE (FIREBASE)
+# ============================================================
+s = slide(WHITE)
+title(s, "Cloud Database — Firebase")
+text(s, 0.9, 1.5, 11.5, 0.5,
+     [{"t": "Every record is a document in Cloud Firestore — created, updated and "
+           "deleted in realtime.", "size": 14, "color": GREY, "italic": True}])
+# left: the app (Ledger)
+phone_placeholder(s, 0.9, 2.2, 2.7, 4.4, "App · Ledger",
+                  image="screenshots/01_ledger.png")
+# centre: realtime-sync badge
+badge(s, 3.95, 3.85, 0.95, AMBER, "🔄", gcolor=INK, gsize=26)
+text(s, 3.5, 4.95, 1.85, 0.5,
+     [{"t": "Realtime sync", "size": 11.5, "bold": True, "align": PP_ALIGN.CENTER,
+       "color": INK}], anchor=MSO_ANCHOR.TOP)
+# right: Firestore console screenshot (real cloud data)
+cpic = s.shapes.add_picture(
+    os.path.join(BASE, "screenshots/firebase_console.png"),
+    Inches(5.25), Inches(2.35), width=Inches(7.45))
+cpic.line.color.rgb = MGREY
+cpic.line.width = Pt(1)
+text(s, 5.25, 2.35 + 7.45 / 2.311 + 0.08, 7.45, 0.35,
+     [{"t": "Cloud Firestore · project des3113-7d1fe · transactions collection",
+       "size": 11, "italic": True, "align": PP_ALIGN.CENTER, "color": GREY}])
+# callouts under the console
+text(s, 5.25, 6.05, 7.45, 1.0,
+     [{"t": [("transactions", INK, True),
+             ("  — one document per record; Create/Update via set(), Delete via delete().",
+              GREY, False)], "size": 12, "sa": 6},
+      {"t": [("Fields", INK, True),
+             ("  — amount · category · type · date · title · note, mirroring the model.",
+              GREY, False)], "size": 12}])
+
+# ============================================================
+# SLIDE 10 — UI / UX DESIGN
 # ============================================================
 s = slide(WHITE)
 title(s, "UI / UX Design")
 text(s, 0.9, 1.5, 11.5, 0.5,
      [{"t": "Material 3 · amber brand colour · familiar daily-ledger layout.",
        "size": 14, "color": GREY, "italic": True}])
-shots = ["Ledger", "Add Record", "Charts", "Profile"]
+shots = [
+    ("Ledger", "screenshots/01_ledger.png"),
+    ("Add Record", "screenshots/02_add_record.png"),
+    ("Charts", "screenshots/04_charts.png"),
+    ("Discover", "screenshots/05_discover.png"),
+]
 sw_, sh_, gx = 2.78, 3.9, 0.24
 x0, y = 0.9, 2.15
-for i, name in enumerate(shots):
+for i, (name, img) in enumerate(shots):
     x = x0 + i * (sw_ + gx)
-    phone_placeholder(s, x, y, sw_, sh_, name)
-
-# ============================================================
-# SLIDE 10 — LIVE DEMO
-# ============================================================
-s = slide(CHARCOAL)
-text(s, 0.9, 2.35, 8.0, 1.0,
-     [{"t": "Live Demo", "size": 48, "bold": True, "color": AMBER,
-       "font": HEAD_FONT}])
-rect(s, 0.95, 3.5, 0.6, 0.07, WHITE)
-steps = [
-    "Add an expense with the keypad",
-    "Watch it appear in today's ledger",
-    "Open it, edit the amount, delete it",
-    "Set a budget · view the charts",
-]
-for i, st in enumerate(steps):
-    yy = 3.85 + i * 0.66
-    badge(s, 0.95, yy, 0.42, AMBER, str(i + 1), gcolor=INK, gsize=16)
-    text(s, 1.55, yy, 7.0, 0.5,
-         [{"t": st, "size": 16, "color": WHITE}], anchor=MSO_ANCHOR.MIDDLE)
-phone_placeholder(s, 9.4, 1.7, 3.0, 4.1, "App Demo", dark=True)
+    phone_placeholder(s, x, y, sw_, sh_, name, image=img)
 
 # ============================================================
 # SLIDE 11 — TESTING
@@ -457,7 +493,7 @@ team = [
     ("Sazit Ul Islam", "Project lead · State management & data model"),
     ("Nur Aisyatul Najwa binti Mohamad Nasir", "UI/UX · Ledger & Detail screens"),
     ("Nurfatin Aqilah binti Zolkifli", "Add/Edit & Charts screens"),
-    ("Shi Kaiyan", "Discover, Profile · Firebase & testing"),
+    ("Shi Kaiyan", "Discover screen · Firebase & testing"),
     ("Mst Samiya Haque Kotha", "Documentation, report & presentation"),
 ]
 y0 = 1.8
@@ -525,7 +561,7 @@ text(s, 0.95, 4.6, 11.5, 0.6,
      [{"t": "Built with Flutter  ·  Firebase  ·  Cloud Firestore",
        "size": 15, "color": CREAMTXT, "italic": True}])
 text(s, 0.95, 5.5, 11.5, 0.6,
-     [{"t": "Questions & demo  ·  github.com/LBBT-God/expense-tracker", "size": 14,
+     [{"t": "Questions  ·  github.com/LBBT-God/expense-tracker", "size": 14,
        "color": AMBER}])
 
 out = r"D:\des3113\docs\My_Wallet_Presentation.pptx"
