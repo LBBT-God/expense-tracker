@@ -52,4 +52,8 @@ app.*.map.json
 
 # Local helper output
 docs/*.pdf
+!docs/UIUX · Ledger & Detail screens.pdf
 docs/_qa.txt
+
+# Nested scratch clone — not part of this repo
+/expense-tracker/

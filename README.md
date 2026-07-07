@@ -18,7 +18,7 @@ Material 3 user interface.
 | **Create** | Add an income/expense record through a custom numeric keypad, category grid, date picker and note field. |
 | **Read** | Browse records grouped by day in the **Ledger**, switch months, and open any record in a detailed view. |
 | **Update** | Edit any existing record — the Add screen is reused in "edit" mode. |
-| **Delete** | Remove a record with a confirmation dialog, or clear all data from the Profile page. |
+| **Delete** | Remove a record with a confirmation dialog from the Detail view. |
 | **Charts** | A custom-painted line chart (Week / Month / Year) plus a category breakdown with percentages. |
 | **Budget** | Set a monthly budget and track remaining balance with a circular progress indicator. |
 | **Persistence** | All data is stored in **Cloud Firestore** and synced across devices in realtime. |
@@ -65,9 +65,9 @@ lib/
 │   ├── add_record_screen.dart    # Create & Update — keypad + categories
 │   ├── detail_screen.dart        # Read one + entry points to Update / Delete
 │   ├── charts_screen.dart        # Line chart + category breakdown
-│   ├── discover_screen.dart      # Monthly bill + budget tracking
-│   └── profile_screen.dart       # Stats, settings, clear-all
+│   └── discover_screen.dart      # Monthly bill + budget tracking
 └── widgets/
+    ├── summary_card.dart         # Month income/expense summary header
     └── transaction_tile.dart     # Reusable list row
 ```
 
